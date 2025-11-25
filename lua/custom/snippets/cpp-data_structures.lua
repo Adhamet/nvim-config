@@ -1,0 +1,85 @@
+local ls = require "luasnip"
+local s = ls.snippet
+local t = ls.text_node
+local i = ls.insert_node
+
+ls.add_snippets("cpp", {
+      -- hash-table hashing functions (splitmix64)
+      s("splitmix", {
+            t{
+                  "struct SplitMix64 {",
+                  "      static uint64_t splitmix64(uint64_t x) {",
+                  "            x += 0x9e3779b97f4a7c15;",
+                  "            x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;",
+                  "            x = (x ^ (x >> 27)) * 0x94d049bb133111eb;",
+                  "            return x ^ (x >> 31);",
+                  "      }",
+                  "      size_t operator()(uint64_t x) const {",
+                  "            static const uint64_t FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();",
+                  "            return splitmix64(x + FIXED_RANDOM);",
+                  "      }",
+                  "};",
+            }
+      }),
+
+      -- priority queue min heap
+      s("minheap", {
+            t{
+                  "template<typename T>",
+                  "using MinHeap = std::priority_queue<T, std::vector<T>, std::greater<T>>;"
+            }
+      }),
+
+      -- Disjoint Union Set
+      s("DSU", {
+            t({
+                  "struct DSU {",
+                  "      std::vector<int> par, sz;",
+                  "",
+                  "      DSU(int n): par(n), sz(n, 1) { iota(par.begin(), par.end(), 0); }",
+                  "",
+                  "      int root(int v) { return v == par[v] ? v : par[v] = root(par[v]); }",
+                  "",
+                  "      bool unite(int u, int v) {",
+                  "            u = root(u), v = root(v);",
+                  "            if (u == v) return false;",
+                  "            if (sz[u] < sz[v]) std::swap(u, v);",
+                  "            par[v] = u;",
+                  "            sz[u] += sz[v];",
+                  "            return true;",
+                  "      }",
+                  "};"
+            })
+      }),
+
+      -- Segment Tree Min/Max
+      s("SegTreeMin", {
+            t{
+                  "struct SegTreeMin {",
+                  "      std::vector<int> tree, a;",
+                  "",
+                  "      SegTreeMin(int n): tree((4*n)+1) {};",
+                  "",
+                  "      void build(int v, int tl, int tr) {",
+                  "            if (tl == tr) tree[v] = a[tl];",
+                  "            else {",
+                  "                  int tm = (tl + tr) >> 1;",
+                  "                  build(v<<1, tl, tm);",
+                  "                  build(v<<1|1, tm+1, tr);",
+                  "                  tree[v] = std::min(tree[v<<1], tree[v<<1|1]);",
+                  "            }",
+                  "      }",
+                  "",
+                  "      int query(int v, int tl, int tr, int l, int r) {",
+                  "            if (l > r) return INT_MAX;",
+                  "            if (tl >= l && tr <= r) return tree[v];",
+                  "            int tm = (tl + tr) >> 1;",
+                  "            int lft = query(v<<1, tl, tm, l, std::min(r, tm)); // go left",
+                  "            int rht = query(v<<1|1, tm+1, tr, std::max(l, tm+1), r); // go right",
+                  "            return std::min(lft, rht);",
+                  "      }",
+                  "};",
+            }
+      }),
+})
+
