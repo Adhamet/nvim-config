@@ -15,6 +15,8 @@ vim.opt.cursorlineopt = "both"
 vim.opt.cursorcolumn = true
 vim.opt.hlsearch = true
 vim.opt.clipboard = "unnamedplus"
+vim.opt.scrolloff = 8
+vim.opt.sidescrolloff = 8
 
 vim.api.nvim_create_autocmd("BufWritePre",
       {

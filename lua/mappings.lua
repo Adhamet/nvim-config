@@ -17,6 +17,10 @@ map("n", "<C-q>", ":q!<CR>", opts)
 -- Ctrl + n to toggle nvimtree
 map("n", "<C-n>", ":NvimTreeToggle<CR>", opts)
 
+-- Useful keymaps for faster movement
+map('n', '<C-d>', '5jzz')  -- centered scroll down
+map('n', '<C-u>', '5kzz')  -- centered scroll up
+
 -- Splits navigation using Ctrl + Arrow Keys
 map("n", "<C-Left>", "<C-w>h", opts)
 map("n", "<C-Down>", "<C-w>j", opts)
