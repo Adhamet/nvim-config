@@ -4,12 +4,57 @@ local t = ls.text_node
 -- local i = ls.insert_node
 
 ls.add_snippets("cpp", {
-    -- mod arithmetic
-    s("modArithmeticOps", {
-        t{
-            "inline i64 addm(i64 a, i64 b) { return (a += b) >= MOD? a - MOD: a; }",
-            "inline i64 subm(i64 a, i64 b) { return (a -= b) < 0? a + MOD: a; }",
-        }
+    -- Modular integer type (modint)
+    s("mint", {
+        t({
+            "class Z {",
+            "    int val = 0;",
+            "",
+            "public:",
+            "    constexpr Z() = default;",
+            "    template<class T> constexpr Z(const T &v): val((MOD + v % MOD) % MOD) {}",
+            "    constexpr Z(const Z &z) = default;",
+            "    constexpr int operator()() const { return val; }",
+            "    constexpr Z pow(unsigned long long b) const {",
+            "        Z ans = 1;",
+            "        for (Z a = *this; b; b >>= 1, a *= a)",
+            "            if (b & 1) ans *= a;",
+            "        return ans;",
+            "    }",
+            "    constexpr Z inv() const { return pow(MOD - 2); }",
+            "    constexpr Z& operator += (Z a) { val += a.val; if (val >= MOD) val -= MOD; return *this; }",
+            "    constexpr Z& operator -= (Z a) { val -= a.val; if (val < 0) val += MOD; return *this; }",
+            "    constexpr Z& operator *= (Z a) { val = 1LL * val * a.val % MOD; return *this; }",
+            "    constexpr Z& operator /= (Z a) { return *this *= a.inv(); }",
+            "    friend constexpr Z operator + (Z a, Z b) { return a += b; }",
+            "    friend constexpr Z operator - (Z a, Z b) { return a -= b; }",
+            "    friend constexpr Z operator * (Z a, Z b) { return a *= b; }",
+            "    friend constexpr Z operator / (Z a, Z b) { return a /= b; }",
+            "    friend constexpr bool operator<(const Z &a, const Z &b) { return a.val < b.val; }",
+            "    friend constexpr bool operator>(const Z &a, const Z &b) { return a.val > b.val; }",
+            "    friend constexpr bool operator<=(const Z &a, const Z &b) { return a.val <= b.val; }",
+            "    friend constexpr bool operator>=(const Z &a, const Z &b) { return a.val >= b.val; }",
+            "    friend constexpr bool operator==(const Z &a, const Z &b) { return a.val == b.val; }",
+            "    friend constexpr bool operator!=(const Z &a, const Z &b) { return a.val != b.val; }",
+            "    friend std::ostream& operator<<(std::ostream &os, Z a) {",
+            "        return os << a();",
+            "    }",
+            "};"
+        })
+    }),
+
+    s("modinv_1_to_m", {
+        t({
+            "// Assumes m is prime",
+            "std::vector<int> modinv_1_until_m(int m) {",
+            "    std::vector<int> inv(m+1);",
+            "    inv[1] = 1;",
+            "    for(int i=2; i<=m; ++i) {",
+            "        inv[i] = int((i64)(MOD - MOD/i) * inv[MOD % i] % MOD);",
+            "    }",
+            "    return inv;",
+            "}",
+        })
     }),
 
     -- russian peasant
@@ -65,16 +110,11 @@ ls.add_snippets("cpp", {
         }
     }),
 
-    -- Lazy SPF (Contains: factorization, numDivs, sumDivs, mobius, euler-totient)
-    s("lazySPF", {
+    s("spfFactorizer", {
         t{
             "struct SPF {",
             "    int N;",
             "    std::vector<int> spf;",
-            "    std::vector<int> numDiv, mobius, totient;",
-            "    std::vector<i64> sumDiv;",
-            "    bool spfDone = false;",
-            "    bool numDivDone = false, sumDivDone = false, mobiusDone = false, totientDone = false;",
             "",
             "    SPF(int n) : N(n) {}",
             "",
@@ -85,24 +125,6 @@ ls.add_snippets("cpp", {
             "        for(int i=2;i*i<=N;i++)",
             "            if(spf[i]==i) for(int j=i*i;j<=N;j+=i) if(spf[j]==j) spf[j]=i;",
             "        spfDone = true;",
-            "    }",
-            "",
-            "    // Compute multiplicative functions, assumes SPF is already computed",
-            "    void compute(bool wantNumDiv=false, bool wantSumDiv=false, bool wantMobius=false, bool wantTotient=false) {",
-            "        assert(spfDone && \"SPF must be computed first!\");",
-            "        if (wantNumDiv && !numDivDone) { numDiv.assign(N+1,1); numDiv[0]=0; numDivDone=true; }",
-            "        if (wantSumDiv && !sumDivDone) { sumDiv.assign(N+1,1); sumDiv[0]=0; sumDivDone=true; }",
-            "        if (wantMobius && !mobiusDone) { mobius.assign(N+1,1); mobiusDone=true; }",
-            "        if (wantTotient && !totientDone) { totient.assign(N+1,0); totient[0]=0; totient[1]=1; totientDone=true; }",
-            "",
-            "        for(int i=2;i<=N;i++){",
-            "            int p = spf[i], cnt=0, x=i;",
-            "            while(x%p==0) x/=p, cnt++; // dont need for count if going to factorize already",
-            "            if (wantNumDiv) numDiv[i] = numDiv[x]*(cnt+1); // (exp1 + 1)*(exp2 + 1)*...*(expn + 1)",
-            "            if (wantSumDiv) sumDiv[i] = sumDiv[x]*((pow(p,cnt+1)-1)/(p-1)); // watchout for pow <--------",
-            "            if (wantMobius) mobius[i] = (x % p == 0 ? 0 : -mobius[x]);",
-            "            if (wantTotient) totient[i] = (x % p == 0 ? totient[x]*p : totient[x]*(p-1));",
-            "        }",
             "    }",
             "",
             "    // Factorize x <= N, assumes SPF is already computed",
@@ -135,6 +157,58 @@ ls.add_snippets("cpp", {
             "    return a1;",
             "}",
         }
+    }),
+
+    -- Euler Totient Function (phi)
+    s("phi", {
+        t({
+            "// Euler Totient Function",
+            "// Computes phi(n) in O(sqrt(n))",
+            "i64 phi(i64 n) {",
+            "    i64 res = n;",
+            "    for (i64 p = 2; p * p <= n; ++p) {",
+            "        if (n % p == 0) {",
+            "            while (n % p == 0) n /= p;",
+            "            res -= res / p;",
+            "        }",
+            "    }",
+            "    if (n > 1) res -= res / n;",
+            "    return res;",
+            "}",
+        })
+    }),
+
+
+    -- Euler Totient for all 1..n (linear sieve)
+    s("phi_1_to_n", {
+        t({
+            "// Euler Totient Function for all 1..n (Linear Sieve)",
+            "// Time: O(n), Space: O(n)",
+            "std::vector<i64> phi_1_to_n(int n) {",
+            "    std::vector<i64> phi(n + 1);",
+            "    std::vector<int> primes;",
+            "    std::vector<bool> isComposite(n + 1, false);",
+            "",
+            "    phi[1] = 1;",
+            "    for (int i = 2; i <= n; ++i) {",
+            "        if (!isComposite[i]) {",
+            "            primes.push_back(i);",
+            "            phi[i] = i - 1;",
+            "        }",
+            "        for (int p : primes) {",
+            "            if ((i64)p * i > n) break;",
+            "            isComposite[p * i] = true;",
+            "            if (i % p == 0) {",
+            "                phi[p * i] = phi[i] * p;",
+            "                break;",
+            "            } else {",
+            "                phi[p * i] = phi[i] * (p - 1);",
+            "            }",
+            "        }",
+            "    }",
+            "    return phi;",
+            "}",
+        })
     })
 })
 
