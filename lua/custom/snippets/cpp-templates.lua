@@ -58,7 +58,7 @@ ls.add_snippets("cpp", {
     }),
 
 
-    s("debug", {
+    s("debugger", {
         t({
             "#ifdef LOCAL",
             '    #include "debug.h"',
