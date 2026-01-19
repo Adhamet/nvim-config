@@ -1,12 +1,7 @@
-local ls = require "luasnip"
-local s = ls.snippet
-local t = ls.text_node
-local i = ls.insert_node
-
-ls.add_snippets("cpp", {
-    -- points 2d long double 
-    s("dpoints2d", {
-        t{
+{
+    "dpoints2d": {
+        "prefix": "dpoints2d",
+        "body": [
             "struct Pt {",
             "    long double x, y;",
             "    Pt() : x(0), y(0) {}",
@@ -27,13 +22,13 @@ ls.add_snippets("cpp", {
             "    inline long double norm() const { return sqrtl(norm2()); }",
             "",
             "    inline Pt unit() const { long double n = norm(); return {x / n, y / n}; }",
-            "};",
-        }
-    }),
-
-    -- points 2d long long
-    s("ipoints2d", {
-        t{
+            "};"
+        ],
+        "description": "2D points with long double coordinates"
+    },
+    "ipoints2d": {
+        "prefix": "ipoints2d",
+        "body": [
             "struct Pt {",
             "    long long x, y;",
             "    Pt() : x(0), y(0) {}",
@@ -54,8 +49,8 @@ ls.add_snippets("cpp", {
             "    inline long double norm() const { return sqrtl(norm2()); }",
             "",
             "    inline Pt unit() const { long double n = norm(); return {(long long)roundl(x / n), (long long)roundl(y / n)}; }",
-            "};",
-        }
-    })
-})
-
+            "};"
+        ],
+        "description": "2D points with integer coordinates"
+    }
+}

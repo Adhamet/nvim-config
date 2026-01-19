@@ -1,3 +1,4 @@
-**My NvChad configuration!**
+# 💤 LazyVim
 
-- Currently only tailored for competitive programming, will add more features as I expand!
+A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
+Refer to the [documentation](https://lazyvim.github.io/installation) to get started.

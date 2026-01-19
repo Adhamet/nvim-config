@@ -65,6 +65,7 @@ void _debug(const T& x, const Ts&... xs) {
         cerr << ", ";
         _debug(xs...);
     }
+    cerr << '\n';
 }
 
 /* ---------- macro ---------- */
@@ -75,5 +76,4 @@ void _debug(const T& x, const Ts&... xs) {
 #else
 #define debug(...) 42
 #endif
-
 

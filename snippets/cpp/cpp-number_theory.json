@@ -1,12 +1,15 @@
-local ls = require "luasnip"
-local s = ls.snippet
-local t = ls.text_node
--- local i = ls.insert_node
-
-ls.add_snippets("cpp", {
-    -- Modular integer type (modint)
-    s("mint", {
-        t({
+{
+    "modaddsub": {
+        "prefix": "modaddsub",
+        "body": [
+            "inline i64 addm(i64 a, i64 b) { a += b; if (a >= MOD) a -= MOD; return a; }",
+            "inline i64 subm(i64 a, i64 b) { a -= b; if (a < 0) a += MOD; return a; }"
+        ],
+        "description": "Modular addition and subtraction"
+    },
+    "mint": {
+        "prefix": "mint",
+        "body": [
             "class Z {",
             "    int val = 0;",
             "",
@@ -40,11 +43,12 @@ ls.add_snippets("cpp", {
             "        return os << a();",
             "    }",
             "};"
-        })
-    }),
-
-    s("modinv_1_to_m", {
-        t({
+        ],
+        "description": "Modular integer class (modint)"
+    },
+    "modinv_1_to_m": {
+        "prefix": "modinv_1_to_m",
+        "body": [
             "// Assumes m is prime",
             "std::vector<int> modinv_1_until_m(int m) {",
             "    std::vector<int> inv(m+1);",
@@ -53,13 +57,13 @@ ls.add_snippets("cpp", {
             "        inv[i] = int((i64)(MOD - MOD/i) * inv[MOD % i] % MOD);",
             "    }",
             "    return inv;",
-            "}",
-        })
-    }),
-
-    -- russian peasant
-    s("russianPeasant", {
-        t{
+            "}"
+        ],
+        "description": "Compute modular inverses from 1 to m (prime modulus)"
+    },
+    "russianPeasant": {
+        "prefix": "russianPeasant",
+        "body": [
             "i64 russianMul(i64 a, i64 b) {",
             "    i64 res = 0;",
             "    a %= MOD;",
@@ -69,13 +73,13 @@ ls.add_snippets("cpp", {
             "        b >>= 1;",
             "    }",
             "    return res;",
-            "}",
-        }
-    }),
-
-    -- Binary Exponentiation
-    s("binexp", {
-        t{
+            "}"
+        ],
+        "description": "Russian peasant multiplication modulo MOD"
+    },
+    "binexp": {
+        "prefix": "binexp",
+        "body": [
             "i64 binexp(i64 a, i64 b) {",
             "    i64 res = 1;",
             "    a %= MOD;",
@@ -85,13 +89,13 @@ ls.add_snippets("cpp", {
             "        b >>= 1;",
             "    }",
             "    return res;",
-            "}",
-        }
-    }),
-
-    -- Sieve optimized with Odd counting and ignoring all evens (already div by 2)
-    s("sieveOdd", {
-        t{
+            "}"
+        ],
+        "description": "Binary exponentiation modulo MOD"
+    },
+    "sieveOdd": {
+        "prefix": "sieveOdd",
+        "body": [
             "// O(nloglogn)",
             "std::vector<int> primes;",
             "void sieveOdd(int n) {",
@@ -106,12 +110,13 @@ ls.add_snippets("cpp", {
             "",
             "    primes.push_back(2);",
             "    for (int i = 1; i <= m; i++) if (isPrime[i]) primes.push_back(2*i+1);",
-            "}",
-        }
-    }),
-
-    s("spfFactorizer", {
-        t{
+            "}"
+        ],
+        "description": "Sieve of Eratosthenes for odd numbers only"
+    },
+    "spfFactorizer": {
+        "prefix": "spfFactorizer",
+        "body": [
             "struct SPF {",
             "    int N;",
             "    std::vector<int> spf;",
@@ -138,13 +143,13 @@ ls.add_snippets("cpp", {
             "        }",
             "        return factors;",
             "    }",
-            "};",
-        }
-    }),
-
-    -- extended gcd
-    s("extGCD", {
-        t{
+            "};"
+        ],
+        "description": "Smallest Prime Factor (SPF) factorizer"
+    },
+    "extGCD": {
+        "prefix": "extGCD",
+        "body": [
             "int extGCD(int a, int b, int& x, int& y) {",
             "    x = 1, y = 0;",
             "    int x1 = 0, y1 = 1, a1 = a, b1 = b;",
@@ -155,13 +160,13 @@ ls.add_snippets("cpp", {
             "        std::tie(a1, b1) = std::make_tuple(b1, a1 - q * b1);",
             "    }",
             "    return a1;",
-            "}",
-        }
-    }),
-
-    -- Euler Totient Function (phi)
-    s("phi", {
-        t({
+            "}"
+        ],
+        "description": "Extended Euclidean Algorithm"
+    },
+    "phi": {
+        "prefix": "phi",
+        "body": [
             "// Euler Totient Function",
             "// Computes phi(n) in O(sqrt(n))",
             "i64 phi(i64 n) {",
@@ -174,14 +179,13 @@ ls.add_snippets("cpp", {
             "    }",
             "    if (n > 1) res -= res / n;",
             "    return res;",
-            "}",
-        })
-    }),
-
-
-    -- Euler Totient for all 1..n (linear sieve)
-    s("phi_1_to_n", {
-        t({
+            "}"
+        ],
+        "description": "Euler Totient Function for a single number"
+    },
+    "phi_1_to_n": {
+        "prefix": "phi_1_to_n",
+        "body": [
             "// Euler Totient Function for all 1..n (Linear Sieve)",
             "// Time: O(n), Space: O(n)",
             "std::vector<i64> phi_1_to_n(int n) {",
@@ -207,8 +211,8 @@ ls.add_snippets("cpp", {
             "        }",
             "    }",
             "    return phi;",
-            "}",
-        })
-    })
-})
-
+            "}"
+        ],
+        "description": "Euler Totient Function for all 1..n using linear sieve"
+    }
+}
