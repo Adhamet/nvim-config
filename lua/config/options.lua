@@ -17,6 +17,7 @@ vim.opt.cursorlineopt = "both"
 vim.opt.cursorcolumn = true
 vim.opt.list = false
 
+vim.opt.swapfile = false
 
 -- vim.opt.lazyredraw = true
 vim.opt.ttyfast = true

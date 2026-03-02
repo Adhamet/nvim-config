@@ -33,9 +33,9 @@ local function TermWrapper(command)
   vim.cmd(split_cmd)
 
   if style == "vertical" then
-    vim.cmd "vertical resize 45" -- 60 columns wide (change this number)
+    vim.cmd("vertical resize 45") -- 60 columns wide (change this number)
   else
-    vim.cmd "resize 15" -- 15 rows tall
+    vim.cmd("resize 15") -- 15 rows tall
   end
 
   if vim.g.split_term_resize_cmd and vim.g.split_term_resize_cmd ~= "" then
@@ -73,16 +73,20 @@ end
 
 -- Compile and run with test cases
 vim.api.nvim_create_user_command("CPTest", function()
-  local file_path = vim.fn.expand "%:p"
-  local command = string.format("cp-test-runner.sh %s", vim.fn.shellescape(file_path))
+  local file_dir = vim.fn.expand("%:p:h")  -- Get directory
+  local file_name = vim.fn.expand("%:t")   -- Get just filename
+  local command = string.format("cd %s && cp-test-runner.sh %s",
+    vim.fn.shellescape(file_dir),
+    vim.fn.shellescape(file_name)
+  )
   execute_command(command)
 end, { nargs = 0 })
 
 -- Quick compile and run (no tests)
 vim.api.nvim_create_user_command("CPRun", function()
-  local file_dir = vim.fn.expand "%:p:h"
-  local file_name = vim.fn.expand "%:t"
-  local base_name = vim.fn.expand "%:t:r"
+  local file_dir = vim.fn.expand("%:p:h")
+  local file_name = vim.fn.expand("%:t")
+  local base_name = vim.fn.expand("%:t:r")
   local command = string.format(
     'cd %s && g++ -std=c++17 -O2 -Wall -DLOCAL -I"$HOME/cp" %s -o %s && ./%s',
     vim.fn.shellescape(file_dir),
@@ -95,9 +99,9 @@ end, { nargs = 0 })
 
 -- Compile and run with specific input file
 vim.api.nvim_create_user_command("CPRunWithInput", function(args)
-  local file_dir = vim.fn.expand "%:p:h"
-  local file_name = vim.fn.expand "%:t"
-  local base_name = vim.fn.expand "%:t:r"
+  local file_dir = vim.fn.expand("%:p:h")
+  local file_name = vim.fn.expand("%:t")
+  local base_name = vim.fn.expand("%:t:r")
   local input_file = args.args
   local command = string.format(
     'cd %s && g++ -std=c++17 -O2 -Wall -DLOCAL -I"$HOME/cp" %s -o %s && ./%s < %s',
@@ -112,14 +116,14 @@ end, { nargs = 1, complete = "file" })
 
 -- Parse tests from clipboard
 vim.api.nvim_create_user_command("CPParseTests", function()
-  local file_dir = vim.fn.expand "%:p:h"
+  local file_dir = vim.fn.expand("%:p:h")
   local command = string.format("cd %s && parse-tests.sh", vim.fn.shellescape(file_dir))
   execute_command(command)
 end, { nargs = 0 })
 
 -- Generate test files manually (quick input/output creation)
 vim.api.nvim_create_user_command("CPNewTest", function()
-  local file_dir = vim.fn.expand "%:p:h"
+  local file_dir = vim.fn.expand("%:p:h")
 
   -- Count existing tests
   local existing = vim.fn.glob(file_dir .. "/input*.txt", false, true)
@@ -142,7 +146,7 @@ end, { nargs = 0 })
 
 -- Stress test (useful for finding edge cases)
 vim.api.nvim_create_user_command("CPStress", function(args)
-  local file_name = vim.fn.expand "%:t:r"
+  local file_name = vim.fn.expand("%:t:r")
   local iterations = args.args ~= "" and args.args or "100"
 
   local stress_script = string.format(
@@ -166,7 +170,7 @@ done
     file_name
   )
 
-  local file_dir = vim.fn.expand "%:p:h"
+  local file_dir = vim.fn.expand("%:p:h")
   local stress_file = file_dir .. "/stress.sh"
   vim.fn.writefile(vim.split(stress_script, "\n"), stress_file)
   vim.fn.setfperm(stress_file, "rwxr-xr-x")
