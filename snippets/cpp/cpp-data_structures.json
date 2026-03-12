@@ -4,9 +4,9 @@
         "body": [
             "struct SplitMix64 {",
             "    static uint64_t splitmix64(uint64_t x) {",
-            "        x += 0x9e3779b97f4a7c15;",
-            "        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;",
-            "        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;",
+            "        x += 0x9e3779b97f4a7c15ULL;",
+            "        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;",
+            "        x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;",
             "        return x ^ (x >> 31);",
             "    }",
             "    size_t operator()(uint64_t x) const {",
@@ -51,11 +51,11 @@
         "prefix": "SegTreeMin",
         "body": [
             "struct SegTreeMin {",
-            "    std::vector<int> tree, a;",
+            "    std::vector<int> tree",
             "",
             "    SegTreeMin(int n): tree((4*n)+1) {};",
             "",
-            "    void build(int v, int tl, int tr) {",
+            "    void build(int v, int tl, int tr, const std::vector<int>& a) {",
             "        if (tl == tr) tree[v] = a[tl];",
             "        else {",
             "            int tm = (tl + tr) >> 1;",
@@ -76,5 +76,35 @@
             "};"
         ],
         "description": "Segment tree for min queries"
+    },
+    "SparseTableMin": {
+        "prefix": "SparseTableMin",
+        "body": [
+            "struct SparseTableMin {",
+            "    int n;",
+            "    std::vector<std::vector<int>> st;",
+            "",
+            "    inline int log2_floor(int i) {",
+            "        return i ? 31 - __builtin_clz(i) : -1;",
+            "    }",
+            "",
+            "    SparseTableMin(const std::vector<int>& a) {",
+            "        n = (int)a.size();",
+            "        st.assign(log2_floor(n) + 1, std::vector<int>(n));",
+            "        for (int i = 0; i < n; i++)",
+            "            st[0][i] = a[i];",
+            "        for (int i = 1; i <= log2_floor(n); i++)",
+            "            for (int j = 0; j + (1 << i) <= n; j++)",
+            "                st[i][j] = std::min(st[i - 1][j], st[i - 1][j + (1 << (i - 1))]);",
+            "    }",
+            "",
+            "    inline int query(int l, int r) {",
+            "        if (l > r) return INT_MAX;",
+            "        int i = log2_floor(r - l + 1);",
+            "        return std::min(st[i][l], st[i][r - (1 << i) + 1]);",
+            "    }",
+            "};"
+        ],
+        "description": "Sparse table for O(1) range minimum queries"
     }
 }

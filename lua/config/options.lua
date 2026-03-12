@@ -19,6 +19,11 @@ vim.opt.list = false
 
 vim.opt.swapfile = false
 
+
+-- Better syntax highlighting
+vim.opt.syntax = "Enable"
+
+
 -- vim.opt.lazyredraw = true
 vim.opt.ttyfast = true
 vim.g.loaded_netrw = 1

@@ -22,6 +22,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+
 -- Statusline colors
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern = "*",
